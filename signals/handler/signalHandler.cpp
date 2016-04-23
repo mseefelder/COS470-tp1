@@ -17,7 +17,9 @@ void signal_callback(int signum){
 
 }
 
-  int main () {
+int main () {
+
+    cout<<"Pid "<<::getpid()<<endl;
 
     signal(SIGHUP, signal_callback);
     signal(SIGINT, signal_callback);
