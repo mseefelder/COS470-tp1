@@ -132,7 +132,7 @@ int main(int argc, char const *argv[])
      	{
 			throw SocketException("ERROR reading from socket");
      	}
-     	std::cout<<"Meassage received: "<<buffer<<std::endl;
+     	std::cout<<"Message received: "<<buffer<<std::endl;
      	n = write(newsockfd,"I got your message",18);
      	if (n < 0)
      	{
