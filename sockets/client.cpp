@@ -20,19 +20,26 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <random>
 #include "socketexception.h"
 
 int main(int argc, char const *argv[])
 {
 	//check if port argument was provided
-	if (argc < 3)
+	if (argc < 4)
 	{
-		std::cout<<"Usage is: "<<argv[0]<<"<hostname> <port>"<<std::endl;
+		std::cout<<"Usage is: "<<argv[0]<<"<hostname> <port> <# of messages>"<<std::endl;
 		return 0;
 	}
 
 	try
 	{
+		//Number of messages that will be sent by producer:
+		int messageNum;
+		std::stringstream tempss;
+		tempss << argv[3];
+		tempss >> messageNum;
+
 		/**
 		*  Creates socket that: 
 		*  Uses IPv4 internet protocols (AF_INET defined on sys/socket.h)
@@ -66,7 +73,8 @@ int main(int argc, char const *argv[])
 		struct sockaddr_in serv_addr = {};//initialize cleared struct
 		//Replacing: int portno = atoi(argv[2]);
 		int portno;
-		std::stringstream tempss;
+		tempss.str("");
+		tempss.clear();
 		tempss << argv[2];
 		tempss >> portno;
 		//replaced.
@@ -93,24 +101,50 @@ int main(int argc, char const *argv[])
      		throw SocketException("ERROR while connecting");
      	}
 
-     	//initialize a clear char buffer for receiving/sending messages
-     	char buffer[256] = {};
-     	std::cout<<"Please enter message: "<<std::endl;
-     	std::cin>>buffer;
 
-     	int n = write(sockfd,buffer,strlen(buffer));
+     	/**/
+     	//initialize a clear char buffer for receiving messages
+     	std::cout<<"Client ready and running!"<<std::endl;
+     	char buffer[256] = {};
+
+     	//setup c++11 random number generator
+     	std::random_device rd;
+    	std::mt19937 gen(rd());
+    	std::uniform_int_distribution<> dis(1, 6);
+
+     	int n = -1;
+     	int randNo = 1;
+
+     	for (int i = 1; i < messageNum; ++i)
+     	{
+     		//add pseudo-random integer to randNo
+     		randNo += dis(gen);
+     		std::string number = std::to_string(randNo);
+     		n = write(sockfd, number.c_str(), number.length());
+     		if (n < 0)
+     		{
+			throw SocketException("ERROR writing on socket");
+     		}
+     		std::cout<<"Message sent!"<<std::endl;
+     		n = recv(sockfd,buffer,255,0);
+     		if (n < 0)
+     		{
+				throw SocketException("ERROR reading from socket");
+     		}
+     		else if (n == 0)
+     		{
+     			throw SocketException("Peer has disconnected!");
+     		}
+     		std::cout<<"Response: "<<buffer<<std::endl;
+     		std::memset(buffer, 0, 256);
+     	}
+     	n = write(sockfd,"0",1);
      	if (n < 0)
      	{
 			throw SocketException("ERROR writing on socket");
      	}
-     	//read message and answer
-     	std::memset(buffer, 0, 256);
-     	n = read(sockfd,buffer,255);
-     	if (n < 0)
-     	{
-			throw SocketException("ERROR reading from socket");
-     	}
-     	std::cout<<buffer<<std::endl;
+     	/**/
+
      	close(sockfd);
 	}
 	catch (std::exception &e)

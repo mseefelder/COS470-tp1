@@ -9,11 +9,14 @@
  * http://linux.die.net/man/2/accept
  * http://linux.die.net/man/2/listen
  *
+ * CONSUMER
+ *
 */
 
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <cstring>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -56,14 +59,14 @@ int main(int argc, char const *argv[])
 		std::stringstream tempss;
 		tempss << argv[1];
 		tempss >> portno;
-		//replaced.
-     	serv_addr.sin_family = AF_INET;
-     	serv_addr.sin_addr.s_addr = INADDR_ANY;
-     	/**
-     	 *  htons: converts the unsigned short integer from host byte 
-     	 * order to network byte order (netinet/in.h)
-     	 */
-     	serv_addr.sin_port = htons(portno);
+          //replaced.
+          /**
+           *  htons: converts the unsigned short integer from host byte 
+           * order to network byte order (netinet/in.h)
+           */
+          serv_addr.sin_port = htons(portno);
+          serv_addr.sin_family = AF_INET;
+          serv_addr.sin_addr.s_addr = INADDR_ANY;//(?)
 
      	/**
      	 *  Assigning a name to the socket:
@@ -126,19 +129,41 @@ int main(int argc, char const *argv[])
      	//initialize a clear char buffer for receiving messages
      	char buffer[256] = {};
 
-     	//read message and answer
-     	int n = read(newsockfd,buffer,255);
-     	if (n < 0)
-     	{
-			throw SocketException("ERROR reading from socket");
-     	}
-     	std::cout<<"Message received: "<<buffer<<std::endl;
-     	n = write(newsockfd,"I got your message",18);
-     	if (n < 0)
-     	{
-			throw SocketException("ERROR writing on socket");
-     	}
+          /**/
+          std::cout<<"Server up and connected..."<<std::endl;
+          bool keepReading = true;
+          int n = -1;
+          int number = 0;
+          while(keepReading)
+          {
+               std::cout<<"Server waiting for message..."<<std::endl;
+               n = recv(newsockfd,buffer,255,0);//blocking receive call
+               if (n < 0)
+               {
+                    throw SocketException("ERROR reading from socket");
+               }
+               else if (n == 0)
+               {
+                    throw SocketException("Peer has disconnected!");
+               }
 
+               tempss.clear();
+               tempss.str(buffer);
+               number = std::stoi(tempss.str());
+
+               std::cout<<"Message received: "<<number<<std::endl;
+               if (number == 0)
+               {
+                    keepReading = false;
+               }
+               std::memset(buffer, 0, 256);
+               n = write(newsockfd,"1",1);
+               if (n < 0)
+               {
+                    throw SocketException("ERROR writing on socket");
+               }
+          }
+          /**/
      	close(newsockfd);
      	close(sockfd);
 	}
