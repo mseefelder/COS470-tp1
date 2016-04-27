@@ -131,13 +131,13 @@ int main(int argc, char const *argv[])
      	char buffer[256] = {};
 
           /**/
-          std::cout<<"Server up and connected..."<<std::endl;
+          std::cout<<"CONSUMER:\nServer up and connected..."<<std::endl;
           bool keepReading = true;
           int n = -1;
           int number = 0;
           while(keepReading)
           {
-               std::cout<<"Server waiting for message..."<<std::endl;
+               std::cout<<"Consumer waiting for number..."<<std::endl;
                n = recv(newsockfd,buffer,255,0);//blocking receive call
                if (n < 0)
                {
@@ -152,7 +152,7 @@ int main(int argc, char const *argv[])
                tempss.str(buffer);
                number = std::stoi(tempss.str());
 
-               std::cout<<"Message received: "<<number<<std::endl;
+               std::cout<<"Number received: "<<number<<std::endl;
                if (number == 0)
                {
                     std::cout<<"Received signal to halt: 0"<<std::endl;

@@ -5,9 +5,9 @@
  * http://www.linuxhowtos.org/C_C++/socket.htm
  * 
  * http://linux.die.net/man/2/socket
- * http://linux.die.net/man/2/bind
- * http://linux.die.net/man/2/accept
- * http://linux.die.net/man/2/listen
+ * http://linux.die.net/man/3/gethostbyname
+ * http://linux.die.net/man/3/getaddrinfo
+ * http://linux.die.net/man/2/connect
  *
  * compile with -std=c++11
 */
@@ -57,7 +57,12 @@ int main(int argc, char const *argv[])
 		}
 
 		/**
-		 * 
+		 * struct hostent *gethostbyname(const char *name);
+		 *  The gethostbyname() (obsolete) function returns a structure of type 
+		 * hostent (defined in netdb.h) for the given host name. Here name is 
+		 * either a hostname, or an IPv4 address in standard dot notation.
+		 *  
+		 *  The funtction should be replaced by getaddrinfo()
 		 */
 		struct hostent *server;
 		server = gethostbyname(argv[1]);
@@ -71,6 +76,7 @@ int main(int argc, char const *argv[])
 		 * sockaddr_in is defined on netinet/in.h
 		 */
 		struct sockaddr_in serv_addr = {};//initialize cleared struct
+
 		//Replacing: int portno = atoi(argv[2]);
 		int portno;
 		tempss.str("");
@@ -78,15 +84,17 @@ int main(int argc, char const *argv[])
 		tempss << argv[2];
 		tempss >> portno;
 		//replaced.
+
      	serv_addr.sin_family = AF_INET;
+
      	/**
      	 *  Replacing: bcopy((char *)server->h_addr, 
      	 * (char *)&serv_addr.sin_addr.s_addr, server->h_length);
      	 */
-     	//serv_addr.sin_addr.s_addr = (char *)server->h_addr;
      	std::memcpy((char *)&serv_addr.sin_addr.s_addr, 
      		(char *)server->h_addr, server->h_length);
-     	//replaced(?)
+     	//replaced
+
      	/**
      	 *  htons: converts the unsigned short integer from host byte 
      	 * order to network byte order (netinet/in.h)
@@ -94,7 +102,7 @@ int main(int argc, char const *argv[])
      	serv_addr.sin_port = htons(portno);
 
      	/**
-     	 *  connect()
+     	 *  connect() to server
      	 */
      	if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
      	{
@@ -104,7 +112,7 @@ int main(int argc, char const *argv[])
 
      	/**/
      	//initialize a clear char buffer for receiving messages
-     	std::cout<<"Client ready and running!"<<std::endl;
+     	std::cout<<"PRODUCER:\nClient ready and running!"<<std::endl;
      	char buffer[1] = {};
 
      	//setup c++11 random number generator
