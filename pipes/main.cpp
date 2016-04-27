@@ -5,7 +5,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include "isPrime.h"
+#include "../utility/isPrime.h"
 
 using namespace std;
 
@@ -94,7 +94,7 @@ int main (void) {
       Close other end first. */
     close (mypipe[0]);
     //    write_to_pipe (mypipe[1]);
-    producer(5000000, mypipe[1]);
+    producer(1000, mypipe[1]);
     return EXIT_SUCCESS;
   }
 }

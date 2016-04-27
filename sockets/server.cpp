@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "socketexception.h"
+ #include "../utility/isPrime.h"
 
 int main(int argc, char const *argv[])
 {
@@ -154,10 +155,19 @@ int main(int argc, char const *argv[])
                std::cout<<"Message received: "<<number<<std::endl;
                if (number == 0)
                {
+                    std::cout<<"Received signal to halt: 0"<<std::endl;
                     keepReading = false;
                }
                std::memset(buffer, 0, 256);
-               n = write(newsockfd,"1",1);
+
+               if (isPrime(number))
+               {
+                    n = write(newsockfd,"1",1);//is prime   
+               }
+               else
+               {
+                    n = write(newsockfd,"0",1);//is not prime
+               }
                if (n < 0)
                {
                     throw SocketException("ERROR writing on socket");

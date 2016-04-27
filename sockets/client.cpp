@@ -105,12 +105,12 @@ int main(int argc, char const *argv[])
      	/**/
      	//initialize a clear char buffer for receiving messages
      	std::cout<<"Client ready and running!"<<std::endl;
-     	char buffer[256] = {};
+     	char buffer[1] = {};
 
      	//setup c++11 random number generator
      	std::random_device rd;
     	std::mt19937 gen(rd());
-    	std::uniform_int_distribution<> dis(1, 6);
+    	std::uniform_int_distribution<> dis(1, 10);
 
      	int n = -1;
      	int randNo = 1;
@@ -125,8 +125,7 @@ int main(int argc, char const *argv[])
      		{
 			throw SocketException("ERROR writing on socket");
      		}
-     		std::cout<<"Message sent!"<<std::endl;
-     		n = recv(sockfd,buffer,255,0);
+     		n = recv(sockfd,buffer,1,0);
      		if (n < 0)
      		{
 				throw SocketException("ERROR reading from socket");
@@ -135,8 +134,18 @@ int main(int argc, char const *argv[])
      		{
      			throw SocketException("Peer has disconnected!");
      		}
-     		std::cout<<"Response: "<<buffer<<std::endl;
-     		std::memset(buffer, 0, 256);
+     		
+     		//In response, check if is prime ('1') or not ('0')
+     		std::cout<<number;
+     		if (buffer[0] == '1')
+     		{
+     			std::cout<<" is prime."<<std::endl;
+     		}
+     		else if (buffer[0] = '0')
+     		{
+     			std::cout<<" is NOT prime."<<std::endl;
+     		}
+     		std::memset(buffer, 0, 1);
      	}
      	n = write(sockfd,"0",1);
      	if (n < 0)
