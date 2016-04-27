@@ -2,4 +2,4 @@
 
 echo "Compiling Pipes Consumer-Producer..."
 
-g++ main.cpp -o pipes
+g++ main.cpp -o pipes -std=c++11

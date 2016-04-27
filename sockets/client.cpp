@@ -117,13 +117,13 @@ int main(int argc, char const *argv[])
 
      	//setup c++11 random number generator
      	std::random_device rd;
-    	std::mt19937 gen(rd());
-    	std::uniform_int_distribution<> dis(1, 10);
+    	     std::mt19937 gen(rd());
+          std::uniform_int_distribution<> dis(1, 10);
 
      	int n = -1;
      	int randNo = 1;
 
-     	for (int i = 1; i < messageNum; ++i)
+     	for (int i = 0; i < messageNum; ++i)
      	{
      		//add pseudo-random integer to randNo
      		randNo += dis(gen);
