@@ -20,8 +20,8 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include "socketexception.h"
- #include "../utility/isPrime.h"
+#include "../utility/cexception.h"
+#include "../utility/isPrime.h"
 
 int main(int argc, char const *argv[])
 {
@@ -47,7 +47,7 @@ int main(int argc, char const *argv[])
 		int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		if (sockfd < 0)
 		{
-			throw SocketException("ERROR while opening socket");
+			throw CException("ERROR while opening socket");
 		}
 
 		/**
@@ -80,7 +80,7 @@ int main(int argc, char const *argv[])
      	 */
      	if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
      	{
-     		throw SocketException("ERROR while binding");
+     		throw CException("ERROR while binding");
      	}
 
      	/**
@@ -124,7 +124,7 @@ int main(int argc, char const *argv[])
      	int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
      	if (newsockfd < 0) 
      	{
-     		throw SocketException("ERROR on accept()");
+     		throw CException("ERROR on accept()");
      	}
 
      	//initialize a clear char buffer for receiving messages
@@ -141,11 +141,11 @@ int main(int argc, char const *argv[])
                n = recv(newsockfd,buffer,255,0);//blocking receive call
                if (n < 0)
                {
-                    throw SocketException("ERROR reading from socket");
+                    throw CException("ERROR reading from socket");
                }
                else if (n == 0)
                {
-                    throw SocketException("Peer has disconnected!");
+                    throw CException("Peer has disconnected!");
                }
 
                tempss.clear();
@@ -170,7 +170,7 @@ int main(int argc, char const *argv[])
                }
                if (n < 0)
                {
-                    throw SocketException("ERROR writing on socket");
+                    throw CException("ERROR writing on socket");
                }
           }
           /**/

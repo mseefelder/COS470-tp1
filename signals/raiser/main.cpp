@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <csignal>
+#include "../../utility/cexception.h"
 
 using namespace std;
 
@@ -20,11 +21,16 @@ int main(int argc, char const *argv[])
 		cout << "Sending signal "<<sig<<" to process "<<pid<<endl; 
 		try
 		{
-			kill(pid, sig);
+			int status = kill(pid, sig);
+			if (status < 0)
+			{
+				throw CException("ERROR while sending signal.");
+			}
 		}
-		catch (int e)
+		catch (std::exception &e)
 		{
-			cout<<"Unable to send signal!"<<endl;
+			std::cerr << e.what() << std::endl;
+			return 0;
 		}
 		cout << "Signal sent!" << endl;
 

@@ -11,16 +11,16 @@
 #include <string>
 #include <exception>
 
-class SocketException: public std::exception {
+class CException: public std::exception {
 public:
-	SocketException(const std::string &m) throw()
+	CException(const std::string &m) throw()
 	{
 		message = std::string(m);
 		message.append("\n");
 		message.append(std::strerror(errno));
 	}
 	
-	~SocketException() throw()
+	~CException() throw()
 	{
 
 	}

@@ -17,7 +17,40 @@ void signal_callback(int signum){
 
 }
 
-int main () {
+void printUsage(const char name[])
+{
+    cout<<"Usage is:\n"<<
+            name<<" <flag>\n"<<
+            "flag: 0 or 1"<<
+            " to define whether the wait "<<
+            "for a signal will be busy or "<<
+            "blocking, respectively."<<endl;
+    return;
+}
+
+int main (int argc, char const *argv[]) {
+
+    if (argc < 2)
+    {
+        printUsage(argv[0]);
+        return 0;
+    }
+
+    bool busy = true;
+    if (argv[1][0] == '1')
+    {
+        busy = false;
+    }
+    else if (argv[1][0] == '0')
+    {
+        busy = true;
+    }
+    else
+    {
+        cout<<"Invalid flag!\n";
+        printUsage(argv[0]);
+        return 0;
+    }
 
     cout<<"Pid "<<::getpid()<<endl;
 
@@ -84,10 +117,18 @@ int main () {
     signal(SIGRTMAX-1, signal_callback);
     signal(SIGRTMAX, signal_callback);
 
-    while(1) {
-      printf("Program processing stuff here. \n");
-      sleep(1);
-
+    if (busy)
+    {
+        while(1) {
+          cout<<"Busy waiting."<<endl;
+          sleep(1);
+        }
+    }
+    else
+    {
+        cout<<"Will pause"<<endl;
+        pause();
+        cout<<"Pause ended"<<endl;
     }
 
     return EXIT_SUCCESS;

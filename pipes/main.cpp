@@ -1,13 +1,14 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <cstdio>
+#include <cctype>
 #include <cstdlib>
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <random>
 #include "../utility/isPrime.h"
-#include "pipeexception.h"
+#include "../utility/cexception.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ void producer(int interations, int file){
   stream = fdopen(file,"w");
   if (stream == NULL)
   {
-    throw PipeException("ERROR opening pipe.");
+    throw CException("ERROR opening pipe.");
   }
   for (int i = 0; i < interations; i ++) {
     number += dis(gen);
@@ -45,13 +46,13 @@ void consumer(int file) {
   if(stream == NULL)
   if (stream == NULL)
   {
-    throw PipeException("ERROR opening pipe.");
+    throw CException("ERROR opening pipe.");
   }
   while(1) {
     recived = fscanf(stream, "%i \n", &number);
     if (recived < 0) 
     {
-      throw PipeException("ERROR reading from pipe.");
+      throw CException("ERROR reading from pipe.");
     }
     if( number == 0){
       break;
@@ -66,25 +67,40 @@ void consumer(int file) {
 }
 
 
+int main (int argc, char const *argv[]) {
 
+  if (argc < 2)
+  {
+    cout<<"Usage is:\n"<<argv[0]<<
+      " <amount of numbers to generate>"<<
+      endl;
+    return 0;
+  }
 
-int main (void) {
+  if (!isdigit(argv[1][0]))
+  {
+    cerr<<"Amount of numbers to generate should be a number!"<<endl;
+    return 0;
+  }
+  int amount = atoi(argv[1]);
+
   pid_t pid;
   int mypipe[2];
 
   try
   {
+
     /* Create the pipe. */
     if (pipe (mypipe) < 0)
     {
-      throw PipeException("Pipe failed.");
+      throw CException("Pipe failed.");
     }
 
     /* Create the child process. */
     pid = fork ();
     if (pid < (pid_t) 0)
     {
-      throw PipeException("Fork failed.");
+      throw CException("Fork failed.");
     }
   }
   catch (std::exception &e)
@@ -114,11 +130,11 @@ int main (void) {
     close (mypipe[0]);
     try
     {
-      producer(1000, mypipe[1]);
+      producer(amount, mypipe[1]);
     }
-    catch (std::exception &e)
+    catch (exception &e)
     {
-      std::cerr << e.what() << std::endl;
+      cerr << e.what() << endl;
     }
 
     return EXIT_SUCCESS;

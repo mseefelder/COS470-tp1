@@ -21,7 +21,7 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 #include <random>
-#include "socketexception.h"
+#include "../utility/cexception.h"
 
 int main(int argc, char const *argv[])
 {
@@ -53,7 +53,7 @@ int main(int argc, char const *argv[])
 		int sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		if (sockfd < 0)
 		{
-			throw SocketException("ERROR while opening socket");
+			throw CException("ERROR while opening socket");
 		}
 
 		/**
@@ -68,7 +68,7 @@ int main(int argc, char const *argv[])
 		server = gethostbyname(argv[1]);
 		if (server == NULL) 
 		{
-	        throw SocketException("ERROR, no such host\n");
+	        throw CException("ERROR, no such host\n");
 	    }
 
 		/**
@@ -106,7 +106,7 @@ int main(int argc, char const *argv[])
      	 */
      	if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
      	{
-     		throw SocketException("ERROR while connecting");
+     		throw CException("ERROR while connecting");
      	}
 
 
@@ -131,16 +131,16 @@ int main(int argc, char const *argv[])
      		n = write(sockfd, number.c_str(), number.length());
      		if (n < 0)
      		{
-			throw SocketException("ERROR writing on socket");
+			throw CException("ERROR writing on socket");
      		}
      		n = recv(sockfd,buffer,1,0);
      		if (n < 0)
      		{
-				throw SocketException("ERROR reading from socket");
+				throw CException("ERROR reading from socket");
      		}
      		else if (n == 0)
      		{
-     			throw SocketException("Peer has disconnected!");
+     			throw CException("Peer has disconnected!");
      		}
      		
      		//In response, check if is prime ('1') or not ('0')
@@ -158,7 +158,7 @@ int main(int argc, char const *argv[])
      	n = write(sockfd,"0",1);
      	if (n < 0)
      	{
-			throw SocketException("ERROR writing on socket");
+			throw CException("ERROR writing on socket");
      	}
      	/**/
 
