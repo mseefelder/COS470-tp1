@@ -31,7 +31,7 @@ void producer(int interations, int file){
   }
   for (int i = 0; i < interations; i ++) {
     number += dis(gen);
-    printf("p: %i \n", number);
+    //printf("p: %i \n", number);
     fprintf(stream, "%i \n", number);
   }
   fprintf(stream, "%i \n", 0);
@@ -58,9 +58,9 @@ void consumer(int file) {
       break;
     }
     if(isPrime(number)) {
-      printf("c true :%i \n", number);
+      printf("%i is prime\n", number);
     } else {
-      printf("c false :%i \n", number);
+      printf("%i is NOT prime\n", number);
     }
   }
   fclose(stream);

@@ -1,1 +1,7 @@
 # Sockets
+
+As compilações foram feitas da forma: `g++ client.cpp -o producer -std=c++11` e `g++ server.cpp -o consumer -std=c++11`.
+
+`./consumer <porta>` abre um servidor na porta escolhida e espera a conexão de um (e apenas um) cliente de forma bloqueante. Ao se conectar com o cliente, aguarda (novamente de forma bloqueante) uma mensagem. Transforma as mensagens recebidas em números inteiros. *Caso o número seja igual a zero* os *sockets* são fechados e a aplicação termina. Caso contrário, verifica se o número é primo e envia uma mensagem de apenas um caractere ao cliente: `'1'` caso seja primo; `'0'` caso contrário. Depois volta a esperar uma mensagem e recomeça o ciclo.
+
+`./producer <endereço do servidor IPv4> <porta do servidor> <N>` cria um cliente que tenta conectar no servidor especificado pelo endereço (no formato IPv4) e a porta fornecidos. Ao estabelecer a conexão a aplicação gera um número, envia o mesmo para o servidor através do socket e espera uma resposta de forma bloqueante. Ao receber a resposta (que pode ser '0' ou '1'), imprime se o número enviado é primo ou não, baseado na resposta. Isso é repetido **N** vezes, onde os **N** números gerados são inteiros aleatórios crescentes. Ao final das **N** iterações, o programa envia um `0`, fecha o socket e termina.
